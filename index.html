@@ -138,8 +138,7 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxMPEopPhziMRSrS03x7a3tqGzvNa9zfkMGJaTAy4HWwCcAxpKBmwC-r4QE1qgC7WZuqA/exec";
-    // Впиши сюда свой Telegram username БЕЗ знака @ (например: "hazrat_zakup")
-    const SUPPLIER_USERNAME = ""; 
+    const SUPPLIER_USERNAME = "hazratgulomov";
 
     const tg = window.Telegram.WebApp;
     tg.expand();
@@ -337,7 +336,7 @@
     function sendOrder() {
       const client = document.getElementById("clientName").value.trim() || "Не указано";
       const address = document.getElementById("clientAddress").value.trim() || "Не указано";
-      
+
       let text = `🛒 НОВЫЙ ЗАКАЗ (Прайс от ${selectedDate}):\n\n`;
       let total = 0;
       Object.values(cart).forEach((i, idx) => {
@@ -349,12 +348,17 @@
       text += `🏪 Клиент: ${client}\n`;
       text += `📍 Адрес: ${address}`;
 
+      const tempInput = document.createElement("textarea");
+      tempInput.value = text;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+
+      alert("Заказ скопирован в буфер обмена! Сейчас откроется чат с @" + SUPPLIER_USERNAME + " — если текст не вставился сам, просто нажмите «Вставить».");
+
       if (SUPPLIER_USERNAME) {
-        const url = `https://t.me/${SUPPLIER_USERNAME}?text=${encodeURIComponent(text)}`;
-        tg.openTelegramLink(url);
-      } else {
-        tg.sendData(JSON.stringify({ orderText: text }));
-        alert("Заказ сформирован:\n\n" + text);
+        tg.openTelegramLink(`https://t.me/${SUPPLIER_USERNAME}`);
       }
       closeModal();
     }
