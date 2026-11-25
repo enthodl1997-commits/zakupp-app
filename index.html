@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Каталог продуктов | Закупка</title>
+  <title>Каталог продуктов</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -16,7 +16,7 @@
       --green: #1ea34a;
       --green-bg: #e8f7ed;
       --red-bg: #ffebeb;
-      --border: rgba(0, 0, 0, 0.06);
+      --border: rgba(0, 0, 0, 0.07);
       --shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
     }
 
@@ -34,7 +34,6 @@
       padding-bottom: 100px;
     }
 
-    /* Шапка в стиле Пятёрочки */
     .top-header {
       position: sticky;
       top: 0;
@@ -42,7 +41,7 @@
       background: var(--card);
       padding: 12px 14px 10px;
       border-bottom: 1px solid var(--border);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
     }
 
     .brand-row {
@@ -52,26 +51,10 @@
       margin-bottom: 10px;
     }
 
-    .brand-logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .brand-title {
       font-size: 20px;
       font-weight: 800;
-      letter-spacing: -0.4px;
-    }
-
-    .brand-badge {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--red);
-      color: #fff;
-      font-size: 15px;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      letter-spacing: -0.3px;
     }
 
     .date-pill {
@@ -81,6 +64,7 @@
       font-weight: 700;
       padding: 4px 10px;
       border-radius: 20px;
+      white-space: nowrap;
     }
 
     .search-wrap {
@@ -95,13 +79,14 @@
       transform: translateY(-50%);
       font-size: 15px;
       color: var(--hint);
+      pointer-events: none;
     }
 
     .search-input {
       width: 100%;
       padding: 10px 14px 10px 36px;
       border-radius: 12px;
-      border: none;
+      border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text);
       font-size: 15px;
@@ -131,7 +116,6 @@
       color: #fff;
     }
 
-    /* Категории */
     .cat-bar {
       padding: 12px 14px 4px;
     }
@@ -153,7 +137,6 @@
       color: #fff;
     }
 
-    /* Сетка товаров 2 колонки */
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -174,13 +157,13 @@
 
     .card-img {
       width: 100%;
-      height: 94px;
+      height: 92px;
       border-radius: 14px;
       background: #f8f9fb;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 46px;
+      font-size: 44px;
       margin-bottom: 8px;
       position: relative;
       overflow: hidden;
@@ -293,7 +276,6 @@
       justify-content: center;
     }
 
-    /* Нижняя плавающая корзина */
     .cart-float {
       position: fixed;
       bottom: 14px;
@@ -313,15 +295,29 @@
       z-index: 100;
     }
 
-    .loader {
+    .status-box {
       grid-column: span 2;
       text-align: center;
-      padding: 50px 10px;
+      padding: 40px 16px;
       color: var(--hint);
       font-size: 14px;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
     }
 
-    /* Модалка оформления заказа */
+    .retry-btn {
+      margin-top: 12px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: none;
+      background: var(--red);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
     .modal {
       display: none;
       position: fixed;
@@ -387,7 +383,7 @@
       font-weight: 800;
       padding-top: 8px;
       margin-top: 6px;
-      border-top: 1px dashed rgba(0,0,0,0.15);
+      border-top: 1px dashed rgba(0, 0, 0, 0.15);
     }
 
     .field-group {
@@ -448,16 +444,13 @@
 
   <div class="top-header">
     <div class="brand-row">
-      <div class="brand-logo">
-        <span class="brand-badge">5</span>
-        <span>ОптМаркет</span>
-      </div>
+      <div class="brand-title">Каталог продуктов</div>
       <span class="date-pill" id="activeDatePill">Загрузка...</span>
     </div>
 
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" class="search-input" id="searchInput" placeholder="Поиск продуктов (Картофель, лук...)">
+      <input type="text" class="search-input" id="searchInput" placeholder="Поиск товаров (например: Картофель, лук)...">
     </div>
 
     <div class="scroll-row" id="dateRow"></div>
@@ -468,7 +461,7 @@
   </div>
 
   <div class="grid" id="productGrid">
-    <div class="loader" id="loader">Загрузка свежего каталога...</div>
+    <div class="status-box" id="statusBox">Загрузка каталога...</div>
   </div>
 
   <div class="cart-float" id="cartFloat" onclick="openModal()">
@@ -476,7 +469,6 @@
     <span id="cartTotal">0.00 смн →</span>
   </div>
 
-  <!-- Окно оформления заказа -->
   <div class="modal" id="orderModal">
     <div class="modal-sheet">
       <div class="modal-head">
@@ -515,7 +507,12 @@
     const SUPPLIER_USERNAME = "hazratgulomov";
 
     const tg = window.Telegram?.WebApp;
-    if (tg) tg.expand();
+    if (tg) {
+      try {
+        tg.ready();
+        tg.expand();
+      } catch (_) {}
+    }
 
     let allData = [];
     let filteredData = [];
@@ -531,6 +528,8 @@
     }
 
     function normalizeRow(row) {
+      if (!row || typeof row !== "object") return null;
+
       const dateRaw = row.date ?? row["ДАТА"] ?? row["Дата"] ?? "";
       const catRaw = row.category ?? row["КАТЕГОРИЯ"] ?? row["Категория"] ?? "Продукты";
       const nameRaw = row.name ?? row["ТОВАР"] ?? row["Товар"] ?? "";
@@ -539,7 +538,7 @@
       const imgRaw = row.image ?? row["ФОТО"] ?? row["Фото"] ?? "";
 
       let dateStr = String(dateRaw).trim();
-      if (dateStr.includes("T")) {
+      if (dateStr.includes("T") || /GMT|UTC/i.test(dateStr)) {
         const d = new Date(dateStr);
         if (!isNaN(d.getTime())) {
           const dd = String(d.getDate()).padStart(2, "0");
@@ -548,10 +547,13 @@
         }
       }
 
+      const name = String(nameRaw).trim();
+      if (!dateStr || !name) return null;
+
       return {
         date: dateStr,
         category: String(catRaw).trim() || "Продукты",
-        name: String(nameRaw).trim(),
+        name,
         unit: String(unitRaw).trim() || "kg",
         price: parsePrice(priceRaw),
         image: String(imgRaw).trim()
@@ -559,7 +561,7 @@
     }
 
     function getEmoji(name, cat) {
-      const s = (name + " " + cat).toLowerCase();
+      const s = `${name} ${cat}`.toLowerCase();
       if (s.includes("картоф")) return "🥔";
       if (s.includes("лук")) return "🧅";
       if (s.includes("морков")) return "🥕";
@@ -593,25 +595,54 @@
       return new Date(Number(p[2]), Number(p[1]) - 1, Number(p[0]));
     }
 
+    function showGridMessage(text, withRetry = false) {
+      const grid = document.getElementById("productGrid");
+      grid.innerHTML = `
+        <div class="status-box">
+          <div>${text}</div>
+          ${withRetry ? `<button class="retry-btn" onclick="loadPrices()">Повторить загрузку</button>` : ""}
+        </div>
+      `;
+    }
+
     async function loadPrices() {
+      showGridMessage("Загрузка каталога...");
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
+
       try {
-        const res = await fetch(API_URL);
+        const res = await fetch(API_URL, { signal: controller.signal });
+        clearTimeout(timer);
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
         const raw = await res.json();
         const arr = Array.isArray(raw) ? raw : (Array.isArray(raw?.data) ? raw.data : []);
-        allData = arr.map(normalizeRow).filter(i => i.date && i.name);
+        allData = arr.map(normalizeRow).filter(Boolean);
+
+        if (allData.length === 0) {
+          document.getElementById("activeDatePill").innerText = "Пусто";
+          showGridMessage("В таблице пока нет товаров с датой и названием.", true);
+          return;
+        }
 
         const uniqueDates = [...new Set(allData.map(i => i.date))];
         uniqueDates.sort((a, b) => parseDateStr(b) - parseDateStr(a));
         dates = uniqueDates;
-
-        if (dates.length > 0) selectedDate = dates[0];
+        selectedDate = dates[0] || "";
 
         renderDates();
         renderCategories();
         renderProducts();
-      } catch (e) {
-        document.getElementById("productGrid").innerHTML =
-          `<div class="loader">Ошибка загрузки каталога. Проверьте интернет или доступ к таблице.</div>`;
+      } catch (err) {
+        clearTimeout(timer);
+        document.getElementById("activeDatePill").innerText = "Ошибка";
+        const reason = err?.name === "AbortError"
+          ? "Превышено время ожидания ответа от таблицы."
+          : "Не удалось загрузить данные из таблицы.";
+        showGridMessage(`${reason} (${err?.message || "сеть"})`, true);
       }
     }
 
@@ -623,7 +654,19 @@
       dates.forEach((d, idx) => {
         const chip = document.createElement("div");
         chip.className = "date-chip" + (d === selectedDate ? " active" : "");
-        chip.innerText = idx === 0 ? `Свежий • ${d}` : d; chip.onclick = () => { selectedDate = d; cart = {}; updateCartBar(); renderDates(); renderCategories(); renderProducts(); }; row.appendChild(chip); });  pill.innerText = selectedDate ? `Прайс ${selectedDate}` : "Нет прайса";
+        chip.innerText = idx === 0 ? `Свежий • ${d}` : d;
+        chip.onclick = () => {
+          selectedDate = d;
+          cart = {};
+          updateCartBar();
+          renderDates();
+          renderCategories();
+          renderProducts();
+        };
+        row.appendChild(chip);
+      });
+
+      pill.innerText = selectedDate ? `Прайс ${selectedDate}` : "Нет прайса";
     }
 
     function renderCategories() {
@@ -662,12 +705,12 @@
       filteredData = allData.filter(i => {
         const okDate = i.date === selectedDate;
         const okCat = selectedCat === "Все" || i.category === selectedCat;
-        const okSearch = i.name.toLowerCase().includes(q);
+        const okSearch = i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q);
         return okDate && okCat && okSearch;
       });
 
       if (filteredData.length === 0) {
-        grid.innerHTML = `<div class="loader">Товары не найдены</div>`;
+        showGridMessage("По вашему запросу товары не найдены.");
         return;
       }
 
@@ -679,21 +722,22 @@
         const prev = getPrevPrice(item.name, selectedDate);
 
         let diffBadge = "";
-        if (prev !== null && prev !== item.price) {
+        if (prev !== null && prev !== item.price && item.price < 1000000) {
           const diff = +(item.price - prev).toFixed(2);
           if (diff > 0) diffBadge = `<span class="badge-diff up">▲ +${diff}</span>`;
           else if (diff < 0) diffBadge = `<span class="badge-diff down">▼ ${diff}</span>`;
         }
 
         const thumbHtml = item.image
-          ? `<img src="${item.image}" alt="${item.name}">` : `<span>${getEmoji(item.name, item.category)}</span>`;
+          ? `<img src="${item.image}" alt="${item.name}" onerror="this.replaceWith(document.createTextNode('${getEmoji(item.name, item.category)}'))">`
+          : `<span>${getEmoji(item.name, item.category)}</span>`;
 
         let actionHtml = `<div class="archive-tag">Архив цен</div>`;
         if (isLatest) {
           actionHtml = qty > 0
             ? `<div class="qty-box">
                  <button class="qty-btn" onclick="changeQty(${index}, -1)">−</button>
-                 <span class="qty-num">${qty}${item.unit}</span>
+                 <span class="qty-num">${qty} ${item.unit}</span>
                  <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
                </div>`
             : `<button class="btn-add" onclick="changeQty(${index}, 1)">+ В корзину</button>`;
@@ -704,13 +748,15 @@
         card.innerHTML = `
           <div>
             <div class="card-img">
-              ${diffBadge}${thumbHtml}
+              ${diffBadge}
+              ${thumbHtml}
             </div>
             <div class="card-cat">${item.category}</div>
             <div class="card-title">${item.name}</div>
           </div>
           <div>
-            <div class="card-price">${item.price.toFixed(2)} <span>смн / ${item.unit}</span></div>${actionHtml}
+            <div class="card-price">${item.price.toFixed(2)} <span>смн / ${item.unit}</span></div>
+            ${actionHtml}
           </div>
         `;
         grid.appendChild(card);
@@ -728,7 +774,9 @@
       cart[key].qty += delta;
       if (cart[key].qty <= 0) delete cart[key];
 
-      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
+      if (tg?.HapticFeedback) {
+        try { tg.HapticFeedback.impactOccurred("light"); } catch (_) {}
+      }
       updateCartBar();
       renderProducts();
     }
@@ -741,7 +789,8 @@
         return;
       }
       const total = items.reduce((s, i) => s + i.price * i.qty, 0);
-      document.getElementById("cartCount").innerText = `Корзина • ${items.length} поз.`; document.getElementById("cartTotal").innerText = `${total.toFixed(2)} смн →`;
+      document.getElementById("cartCount").innerText = `Корзина • ${items.length} поз.`;
+      document.getElementById("cartTotal").innerText = `${total.toFixed(2)} смн →`;
       bar.style.display = "flex";
     }
 
@@ -755,7 +804,7 @@
         total += sum;
         box.innerHTML += `
           <div class="order-row">
-            <span><b style="text-transform:capitalize;">${i.name}</b> (${i.qty} ${i.unit} ×${i.price.toFixed(2)})</span>
+            <span><b style="text-transform:capitalize;">${i.name}</b> (${i.qty} ${i.unit} × ${i.price.toFixed(2)})</span>
             <b>${sum.toFixed(2)} смн</b>
           </div>
         `;
@@ -781,11 +830,17 @@
       const shopAddress = document.getElementById("shopAddress").value.trim();
 
       if (!shopName || !shopPhone || !shopAddress) {
-        alert("Пожалуйста, заполните название магазина, номер телефона и адрес доставки!");
+        if (tg?.showAlert) {
+          tg.showAlert("Пожалуйста, заполните название магазина, телефон и адрес доставки.");
+        } else {
+          alert("Пожалуйста, заполните название магазина, телефон и адрес доставки.");
+        }
         return null;
       }
 
       const items = Object.values(cart);
+      if (items.length === 0) return null;
+
       let total = 0;
       let linesText = "";
       let rowsHtml = "";
@@ -793,12 +848,12 @@
       items.forEach((i, idx) => {
         const sum = i.price * i.qty;
         total += sum;
-        linesText += `${idx + 1}.${i.name} — ${i.qty}${i.unit} × ${i.price.toFixed(2)} =${sum.toFixed(2)} смн\n`;
+        linesText += `${idx + 1}. ${i.name} — ${i.qty} ${i.unit} × ${i.price.toFixed(2)} = ${sum.toFixed(2)} смн\n`;
         rowsHtml += `
           <tr>
             <td>${idx + 1}</td>
             <td style="text-transform:capitalize;">${i.name}</td>
-            <td>${i.qty}${i.unit}</td>
+            <td>${i.qty} ${i.unit}</td>
             <td>${i.price.toFixed(2)} смн</td>
             <td><b>${sum.toFixed(2)} смн</b></td>
           </tr>
@@ -823,8 +878,99 @@ ${linesText}
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Накладная заказа - ${shopName}</title>
+<title>Накладная - ${shopName}</title>
 <style>
   body { font-family: Arial, sans-serif; padding: 24px; color: #111; max-width: 720px; margin: auto; }
   h1 { font-size: 20px; border-bottom: 2px solid #e52322; padding-bottom: 8px; }
-  .meta {
+  .meta { margin: 14px 0; line-height: 1.6; background: #f7f7f7; padding: 12px; border-radius: 8px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; font-size: 14px; }
+  th { background: #f0f0f0; }
+  .total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 16px; color: #e52322; }
+</style>
+</head>
+<body>
+  <h1>Накладная заказа (Прайс от ${selectedDate})</h1>
+  <div class="meta">
+    <div><b>Дата и время:</b> ${nowStr}</div>
+    <div><b>Магазин:</b> ${shopName}</div>
+    <div><b>Телефон:</b> ${shopPhone}</div>
+    <div><b>Адрес доставки:</b> ${shopAddress}</div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>№</th>
+        <th>Товар</th>
+        <th>Кол-во</th>
+        <th>Цена</th>
+        <th>Сумма</th>
+      </tr>
+    </thead>
+    <tbody>${rowsHtml}</tbody>
+  </table>
+  <div class="total">Итого к оплате: ${total.toFixed(2)} смн</div>
+</body>
+</html>`;
+
+      return { shopName, shopPhone, shopAddress, total, tgMessage, invoiceHtml };
+    }
+
+    function triggerFileDownload(invoiceHtml, shopName) {
+      try {
+        const safeName = shopName.replace(/[^\wа-яА-ЯёЁ0-9_-]+/g, "_") || "Zakaz";
+        const fileName = `Zakaz_${safeName}_${(selectedDate || "today").replace(/\./g, "-")}.html`;
+        const blob = new Blob([invoiceHtml], { type: "text/html;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+      } catch (_) {}
+    }
+
+    function downloadOrderFileOnly() {
+      const data = buildOrderData();
+      if (!data) return;
+      triggerFileDownload(data.invoiceHtml, data.shopName);
+    }
+
+    function submitOrder() {
+      const data = buildOrderData();
+      if (!data) return;
+
+      triggerFileDownload(data.invoiceHtml, data.shopName);
+
+      fetch(API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          priceDate: selectedDate,
+          client: `${data.shopName} (${data.shopPhone})`,
+          address: data.shopAddress,
+          total: data.total.toFixed(2),
+          orderText: data.tgMessage
+        })
+      }).catch(() => {});
+
+      const encodedText = encodeURIComponent(data.tgMessage);
+      const directTgUrl = `https://t.me/${SUPPLIER_USERNAME}?text=${encodedText}`;
+
+      closeModal();
+
+      if (SUPPLIER_USERNAME && tg?.openTelegramLink) {
+        tg.openTelegramLink(directTgUrl);
+      } else if (SUPPLIER_USERNAME) {
+        window.open(directTgUrl, "_blank");
+      }
+    }
+
+    document.getElementById("searchInput").addEventListener("input", renderProducts);
+    loadPrices();
+  </script>
+</body>
+</html>
