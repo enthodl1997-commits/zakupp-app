@@ -3,309 +3,510 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Каталог цен | Закупщик</title>
+  <title>Каталог продуктов | Закупка</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: var(--tg-theme-bg-color, #f4f5f7);
-      --card: var(--tg-theme-secondary-bg-color, #ffffff);
-      --text: var(--tg-theme-text-color, #1c1c1e);
-      --hint: var(--tg-theme-hint-color, #8e8e93);
-      --btn: var(--tg-theme-button-color, #2481cc);
-      --btn-text: var(--tg-theme-button-text-color, #ffffff);
-      --border: rgba(128, 128, 128, 0.15);
+      --bg: #f4f5f7;
+      --card: #ffffff;
+      --text: #191919;
+      --hint: #8a8f98;
+      --red: #e52322;
+      --red-dark: #c91b1a;
+      --green: #1ea34a;
+      --green-bg: #e8f7ed;
+      --red-bg: #ffebeb;
+      --border: rgba(0, 0, 0, 0.06);
+      --shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       background: var(--bg);
       color: var(--text);
-      padding: 12px 12px 90px;
+      padding-bottom: 100px;
     }
 
-    .header {
-      margin-bottom: 12px;
+    /* Шапка в стиле Пятёрочки */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: var(--card);
+      padding: 12px 14px 10px;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     }
-    .header h1 {
+
+    .brand-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 4px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
     }
-    .header p {
-      font-size: 13px;
+
+    .brand-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--red);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .date-pill {
+      background: var(--green-bg);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .search-wrap {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
       color: var(--hint);
     }
 
-    .section-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--hint);
-      margin: 10px 0 6px;
-      text-transform: uppercase;
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 36px;
+      border-radius: 12px;
+      border: none;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
     }
 
     .scroll-row {
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      padding-bottom: 6px;
       scrollbar-width: none;
     }
-    .scroll-row::-webkit-scrollbar {
-      display: none;
-    }
+    .scroll-row::-webkit-scrollbar { display: none; }
 
-    .chip {
-      padding: 7px 14px;
-      border-radius: 20px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      font-size: 13px;
-      font-weight: 500;
+    .date-chip {
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--hint);
+      font-size: 12px;
+      font-weight: 600;
       white-space: nowrap;
       cursor: pointer;
-      transition: 0.15s;
     }
-    .chip.active {
-      background: var(--btn);
-      color: var(--btn-text);
-      border-color: var(--btn);
+    .date-chip.active {
+      background: var(--text);
+      color: #fff;
     }
 
-    .search-box {
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
+    /* Категории */
+    .cat-bar {
+      padding: 12px 14px 4px;
+    }
+
+    .cat-chip {
+      padding: 8px 14px;
+      border-radius: 14px;
       background: var(--card);
       color: var(--text);
-      font-size: 15px;
-      margin: 8px 0 12px;
-      outline: none;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: 0.15s;
+    }
+    .cat-chip.active {
+      background: var(--red);
+      color: #fff;
     }
 
-    .product-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    /* Сетка товаров 2 колонки */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 10px 14px;
     }
 
     .card {
       background: var(--card);
-      border-radius: 14px;
-      padding: 12px 14px;
+      border-radius: 18px;
+      padding: 10px;
       display: flex;
+      flex-direction: column;
       justify-content: space-between;
-      align-items: center;
-      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      position: relative;
     }
 
-    .p-info {
-      flex: 1;
-      padding-right: 10px;
+    .card-img {
+      width: 100%;
+      height: 94px;
+      border-radius: 14px;
+      background: #f8f9fb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 46px;
+      margin-bottom: 8px;
+      position: relative;
+      overflow: hidden;
     }
-    .p-cat {
+
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .badge-diff {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 6px;
+      border-radius: 8px;
+    }
+    .up { background: var(--red-bg); color: var(--red); }
+    .down { background: var(--green-bg); color: var(--green); }
+
+    .card-cat {
       font-size: 11px;
       color: var(--hint);
       margin-bottom: 2px;
     }
-    .p-name {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 4px;
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 8px;
+      min-height: 35px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
       text-transform: capitalize;
     }
-    .p-price-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+
+    .card-price {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
     }
-    .p-price {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--btn);
-    }
-    .diff-up {
-      font-size: 11px;
-      color: #e53935;
-      background: rgba(229, 57, 53, 0.1);
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
-    .diff-down {
-      font-size: 11px;
-      color: #2e7d32;
-      background: rgba(46, 125, 50, 0.1);
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
-    .diff-same {
-      font-size: 11px;
+    .card-price span {
+      font-size: 12px;
+      font-weight: 600;
       color: var(--hint);
     }
 
-    .qty-box {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .qty-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
+    .btn-add {
+      width: 100%;
+      height: 38px;
+      border-radius: 12px;
       border: none;
-      background: var(--btn);
-      color: var(--btn-text);
-      font-size: 18px;
-      font-weight: 600;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 6px;
     }
-    .qty-btn.minus {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .qty-val {
-      font-size: 15px;
-      font-weight: 600;
-      min-width: 24px;
-      text-align: center;
+    .btn-add:active { transform: scale(0.97); }
+
+    .qty-box {
+      width: 100%;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--red);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6px;
     }
 
-    .cart-bar {
+    .qty-btn {
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: transparent;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .qty-num {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .archive-tag {
+      width: 100%;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--bg);
+      color: var(--hint);
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Нижняя плавающая корзина */
+    .cart-float {
       position: fixed;
-      bottom: 12px;
-      left: 12px;
-      right: 12px;
-      background: var(--btn);
-      color: var(--btn-text);
-      padding: 14px 18px;
-      border-radius: 14px;
+      bottom: 14px;
+      left: 14px;
+      right: 14px;
+      background: var(--red);
+      color: #fff;
+      padding: 15px 18px;
+      border-radius: 16px;
       display: none;
       justify-content: space-between;
       align-items: center;
-      font-weight: 600;
       font-size: 15px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(229, 35, 34, 0.35);
       cursor: pointer;
       z-index: 100;
     }
 
     .loader {
+      grid-column: span 2;
       text-align: center;
-      padding: 40px 0;
+      padding: 50px 10px;
       color: var(--hint);
       font-size: 14px;
     }
 
+    /* Модалка оформления заказа */
     .modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.55);
       z-index: 200;
       align-items: flex-end;
     }
-    .modal-content {
+
+    .modal-sheet {
       background: var(--card);
       width: 100%;
-      border-radius: 20px 20px 0 0;
-      padding: 20px 16px;
-      max-height: 85vh;
+      border-radius: 24px 24px 0 0;
+      padding: 20px 16px 26px;
+      max-height: 90vh;
       overflow-y: auto;
     }
-    .modal-header {
+
+    .modal-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 14px;
     }
+
     .modal-title {
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 19px;
+      font-weight: 800;
     }
-    .close-btn {
-      background: none;
+
+    .btn-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       border: none;
-      font-size: 22px;
+      background: var(--bg);
+      font-size: 16px;
       color: var(--hint);
       cursor: pointer;
     }
-    .order-item {
+
+    .order-list {
+      background: var(--bg);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .order-row {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
+      align-items: center;
+      padding: 7px 0;
       border-bottom: 1px solid var(--border);
-      font-size: 14px;
+      font-size: 13px;
     }
-    .input-field {
+    .order-row:last-child { border-bottom: none; }
+
+    .order-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 17px;
+      font-weight: 800;
+      padding-top: 8px;
+      margin-top: 6px;
+      border-top: 1px dashed rgba(0,0,0,0.15);
+    }
+
+    .field-group {
+      margin-bottom: 10px;
+    }
+    .field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--hint);
+      margin-bottom: 4px;
+    }
+    .input {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 10px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+    }
+    .input:focus {
+      border-color: var(--red);
+      background: #fff;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      border-radius: 14px;
+      border: none;
+      background: var(--red);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      margin-top: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(229, 35, 34, 0.3);
+    }
+    .btn-submit:active { background: var(--red-dark); }
+
+    .btn-file-only {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text);
       font-size: 14px;
-      margin-top: 10px;
-      outline: none;
-    }
-    .submit-btn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
-      background: var(--btn);
-      color: var(--btn-text);
-      font-size: 16px;
-      font-weight: 600;
-      margin-top: 14px;
+      font-weight: 700;
+      margin-top: 8px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>Прайс-лист продуктов</h1>
-    <p>Актуальные цены и история по датам (сомони)</p>
+  <div class="top-header">
+    <div class="brand-row">
+      <div class="brand-logo">
+        <span class="brand-badge">5</span>
+        <span>ОптМаркет</span>
+      </div>
+      <span class="date-pill" id="activeDatePill">Загрузка...</span>
+    </div>
+
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="searchInput" placeholder="Поиск продуктов (Картофель, лук...)">
+    </div>
+
+    <div class="scroll-row" id="dateRow"></div>
   </div>
 
-  <div class="section-label">Дата прайса (история цен):</div>
-  <div class="scroll-row" id="dateRow"></div>
+  <div class="cat-bar">
+    <div class="scroll-row" id="catRow"></div>
+  </div>
 
-  <div class="section-label">Категории:</div>
-  <div class="scroll-row" id="catRow"></div>
+  <div class="grid" id="productGrid">
+    <div class="loader" id="loader">Загрузка свежего каталога...</div>
+  </div>
 
-  <input type="text" class="search-box" id="searchInput" placeholder="Поиск товара (например: Картофель)...">
-
-  <div id="loader" class="loader">Загрузка актуальных цен...</div>
-  <div class="product-list" id="productList"></div>
-
-  <div class="cart-bar" id="cartBar" onclick="openModal()">
-    <span id="cartCount">Корзина (0)</span>
+  <div class="cart-float" id="cartFloat" onclick="openModal()">
+    <span id="cartCount">Корзина • 0</span>
     <span id="cartTotal">0.00 смн →</span>
   </div>
 
+  <!-- Окно оформления заказа -->
   <div class="modal" id="orderModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <span class="modal-title">Ваш заказ</span>
-        <button class="close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-sheet">
+      <div class="modal-head">
+        <span class="modal-title">Оформление заказа</span>
+        <button class="btn-close" onclick="closeModal()">✕</button>
       </div>
-      <div id="orderItems"></div>
-      <input type="text" id="clientName" class="input-field" placeholder="Название магазина / ресторана и телефон">
-      <input type="text" id="clientAddress" class="input-field" placeholder="Адрес доставки и время">
-      <button class="submit-btn" onclick="sendOrder()">Отправить заказ поставщику</button>
+
+      <div class="order-list" id="orderSummary"></div>
+
+      <div class="field-group">
+        <label class="field-label">Название магазина / ресторана *</label>
+        <input type="text" id="shopName" class="input" placeholder="Например: Магазин Баракат">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Номер телефона *</label>
+        <input type="tel" id="shopPhone" class="input" placeholder="Например: +992 900 00 00 00">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Адрес доставки *</label>
+        <input type="text" id="shopAddress" class="input" placeholder="Улица, ориентир, время доставки">
+      </div>
+
+      <button class="btn-submit" onclick="submitOrder()">
+        Сохранить файл и отправить в Telegram
+      </button>
+      <button class="btn-file-only" onclick="downloadOrderFileOnly()">
+        📄 Скачать накладную (файл) отдельно
+      </button>
     </div>
   </div>
 
@@ -317,25 +518,25 @@
     if (tg) tg.expand();
 
     let allData = [];
-    let currentFiltered = [];
+    let filteredData = [];
     let dates = [];
     let selectedDate = "";
     let selectedCat = "Все";
     let cart = {};
 
-    function normalizePrice(val) {
+    function parsePrice(val) {
       if (typeof val === "number") return Number.isFinite(val) ? val : 0;
-      const cleaned = String(val ?? "").replace(",", ".").replace(/[^\d.-]/g, "");
-      const num = parseFloat(cleaned);
+      const num = parseFloat(String(val ?? "").replace(",", ".").replace(/[^\d.-]/g, ""));
       return Number.isFinite(num) ? num : 0;
     }
 
     function normalizeRow(row) {
       const dateRaw = row.date ?? row["ДАТА"] ?? row["Дата"] ?? "";
-      const categoryRaw = row.category ?? row["КАТЕГОРИЯ"] ?? row["Категория"] ?? "";
+      const catRaw = row.category ?? row["КАТЕГОРИЯ"] ?? row["Категория"] ?? "Продукты";
       const nameRaw = row.name ?? row["ТОВАР"] ?? row["Товар"] ?? "";
       const unitRaw = row.unit ?? row["ЕДИНИЦА"] ?? row["Единица"] ?? "kg";
       const priceRaw = row.price ?? row["ЦЕНА"] ?? row["Цена"] ?? 0;
+      const imgRaw = row.image ?? row["ФОТО"] ?? row["Фото"] ?? "";
 
       let dateStr = String(dateRaw).trim();
       if (dateStr.includes("T")) {
@@ -343,67 +544,86 @@
         if (!isNaN(d.getTime())) {
           const dd = String(d.getDate()).padStart(2, "0");
           const mm = String(d.getMonth() + 1).padStart(2, "0");
-          const yyyy = d.getFullYear();
-          dateStr = `${dd}.${mm}.${yyyy}`;
+          dateStr = `${dd}.${mm}.${d.getFullYear()}`;
         }
       }
 
       return {
         date: dateStr,
-        category: String(categoryRaw).trim(),
+        category: String(catRaw).trim() || "Продукты",
         name: String(nameRaw).trim(),
         unit: String(unitRaw).trim() || "kg",
-        price: normalizePrice(priceRaw)
+        price: parsePrice(priceRaw),
+        image: String(imgRaw).trim()
       };
     }
 
+    function getEmoji(name, cat) {
+      const s = (name + " " + cat).toLowerCase();
+      if (s.includes("картоф")) return "🥔";
+      if (s.includes("лук")) return "🧅";
+      if (s.includes("морков")) return "🥕";
+      if (s.includes("помид") || s.includes("томат")) return "🍅";
+      if (s.includes("огур")) return "🥒";
+      if (s.includes("капуст")) return "🥬";
+      if (s.includes("перец")) return "🫑";
+      if (s.includes("чеснок")) return "🧄";
+      if (s.includes("яблок")) return "🍎";
+      if (s.includes("банан")) return "🍌";
+      if (s.includes("лимон") || s.includes("апельсин") || s.includes("мандарин")) return "🍊";
+      if (s.includes("виноград")) return "🍇";
+      if (s.includes("арбуз")) return "🍉";
+      if (s.includes("зелень") || s.includes("укроп") || s.includes("кинз")) return "🌿";
+      if (s.includes("мясо") || s.includes("говяд") || s.includes("баран")) return "🥩";
+      if (s.includes("куриц") || s.includes("филе")) return "🍗";
+      if (s.includes("яйц")) return "🥚";
+      if (s.includes("молок")) return "🥛";
+      if (s.includes("сыр")) return "🧀";
+      if (s.includes("масло")) return "🧈";
+      if (s.includes("рис") || s.includes("греч")) return "🌾";
+      if (s.includes("мука") || s.includes("хлеб")) return "🥖";
+      if (s.includes("сахар") || s.includes("соль")) return "🧂";
+      if (s.includes("макарон")) return "🍝";
+      return "🛒";
+    }
+
     function parseDateStr(dStr) {
-      const parts = String(dStr || "").split(".");
-      if (parts.length !== 3) return new Date(0);
-      return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+      const p = String(dStr || "").split(".");
+      if (p.length !== 3) return new Date(0);
+      return new Date(Number(p[2]), Number(p[1]) - 1, Number(p[0]));
     }
 
     async function loadPrices() {
       try {
         const res = await fetch(API_URL);
         const raw = await res.json();
-        const list = Array.isArray(raw) ? raw : (Array.isArray(raw?.data) ? raw.data : []);
-        allData = list.map(normalizeRow).filter(item => item.date && item.name);
+        const arr = Array.isArray(raw) ? raw : (Array.isArray(raw?.data) ? raw.data : []);
+        allData = arr.map(normalizeRow).filter(i => i.date && i.name);
 
-        const uniqueDates = [...new Set(allData.map(item => item.date))];
+        const uniqueDates = [...new Set(allData.map(i => i.date))];
         uniqueDates.sort((a, b) => parseDateStr(b) - parseDateStr(a));
         dates = uniqueDates;
 
-        if (dates.length > 0) {
-          selectedDate = dates[0];
-        }
+        if (dates.length > 0) selectedDate = dates[0];
 
-        document.getElementById("loader").style.display = "none";
         renderDates();
         renderCategories();
         renderProducts();
-      } catch (err) {
-        document.getElementById("loader").innerText = "Ошибка загрузки прайса. Проверьте интернет.";
+      } catch (e) {
+        document.getElementById("productGrid").innerHTML =
+          `<div class="loader">Ошибка загрузки каталога. Проверьте интернет или доступ к таблице.</div>`;
       }
     }
 
     function renderDates() {
       const row = document.getElementById("dateRow");
+      const pill = document.getElementById("activeDatePill");
       row.innerHTML = "";
+
       dates.forEach((d, idx) => {
         const chip = document.createElement("div");
-        chip.className = "chip" + (d === selectedDate ? " active" : "");
-        chip.innerText = idx === 0 ? `${d} (Свежий)` : d;
-        chip.onclick = () => {
-          selectedDate = d;
-          cart = {};
-          updateCartBar();
-          renderDates();
-          renderCategories();
-          renderProducts();
-        };
-        row.appendChild(chip);
-      });
+        chip.className = "date-chip" + (d === selectedDate ? " active" : "");
+        chip.innerText = idx === 0 ? `Свежий • ${d}` : d; chip.onclick = () => { selectedDate = d; cart = {}; updateCartBar(); renderDates(); renderCategories(); renderProducts(); }; row.appendChild(chip); });  pill.innerText = selectedDate ? `Прайс ${selectedDate}` : "Нет прайса";
     }
 
     function renderCategories() {
@@ -411,12 +631,11 @@
       row.innerHTML = "";
       const itemsOnDate = allData.filter(i => i.date === selectedDate);
       const cats = ["Все", ...new Set(itemsOnDate.map(i => i.category).filter(Boolean))];
-
       if (!cats.includes(selectedCat)) selectedCat = "Все";
 
       cats.forEach(c => {
         const chip = document.createElement("div");
-        chip.className = "chip" + (c === selectedCat ? " active" : "");
+        chip.className = "cat-chip" + (c === selectedCat ? " active" : "");
         chip.innerText = c;
         chip.onclick = () => {
           selectedCat = c;
@@ -431,116 +650,124 @@
       const idx = dates.indexOf(currentDate);
       if (idx === -1 || idx + 1 >= dates.length) return null;
       const prevDate = dates[idx + 1];
-      const prevItem = allData.find(
-        i => i.date === prevDate && i.name.toLowerCase() === name.toLowerCase()
-      );
-      return prevItem ? prevItem.price : null;
+      const prev = allData.find(i => i.date === prevDate && i.name.toLowerCase() === name.toLowerCase());
+      return prev ? prev.price : null;
     }
 
     function renderProducts() {
-      const list = document.getElementById("productList");
-      const query = document.getElementById("searchInput").value.toLowerCase().trim();
-      list.innerHTML = "";
+      const grid = document.getElementById("productGrid");
+      const q = document.getElementById("searchInput").value.toLowerCase().trim();
+      grid.innerHTML = "";
 
-      currentFiltered = allData.filter(item => {
-        const matchDate = item.date === selectedDate;
-        const matchCat = selectedCat === "Все" || item.category === selectedCat;
-        const matchSearch = item.name.toLowerCase().includes(query);
-        return matchDate && matchCat && matchSearch;
+      filteredData = allData.filter(i => {
+        const okDate = i.date === selectedDate;
+        const okCat = selectedCat === "Все" || i.category === selectedCat;
+        const okSearch = i.name.toLowerCase().includes(q);
+        return okDate && okCat && okSearch;
       });
 
-      if (currentFiltered.length === 0) {
-        list.innerHTML = `<div class="loader">Товары не найдены</div>`;
+      if (filteredData.length === 0) {
+        grid.innerHTML = `<div class="loader">Товары не найдены</div>`;
         return;
       }
 
-      const isLatestDate = selectedDate === dates[0];
+      const isLatest = selectedDate === dates[0];
 
-      currentFiltered.forEach((item, index) => {
-        const key = `${item.name.toLowerCase()}_${item.unit}`;
+      filteredData.forEach((item, index) => {
+        const key = `${item.name.toLowerCase()}__${item.unit}`;
         const qty = cart[key] ? cart[key].qty : 0;
-        const prevPrice = getPrevPrice(item.name, selectedDate);
+        const prev = getPrevPrice(item.name, selectedDate);
 
-        let diffHtml = "";
-        if (prevPrice !== null) {
-          const diff = +(item.price - prevPrice).toFixed(2);
-          if (diff > 0) diffHtml = `<span class="diff-up">▲ +${diff} смн</span>`;
-          else if (diff < 0) diffHtml = `<span class="diff-down">▼ ${diff} смн</span>`;
-          else diffHtml = `<span class="diff-same">без изм.</span>`;
+        let diffBadge = "";
+        if (prev !== null && prev !== item.price) {
+          const diff = +(item.price - prev).toFixed(2);
+          if (diff > 0) diffBadge = `<span class="badge-diff up">▲ +${diff}</span>`;
+          else if (diff < 0) diffBadge = `<span class="badge-diff down">▼ ${diff}</span>`;
+        }
+
+        const thumbHtml = item.image
+          ? `<img src="${item.image}" alt="${item.name}">` : `<span>${getEmoji(item.name, item.category)}</span>`;
+
+        let actionHtml = `<div class="archive-tag">Архив цен</div>`;
+        if (isLatest) {
+          actionHtml = qty > 0
+            ? `<div class="qty-box">
+                 <button class="qty-btn" onclick="changeQty(${index}, -1)">−</button>
+                 <span class="qty-num">${qty}${item.unit}</span>
+                 <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+               </div>`
+            : `<button class="btn-add" onclick="changeQty(${index}, 1)">+ В корзину</button>`;
         }
 
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
-          <div class="p-info">
-            <div class="p-cat">${item.category}</div>
-            <div class="p-name">${item.name}</div>
-            <div class="p-price-row">
-              <span class="p-price">${item.price.toFixed(2)} смн / ${item.unit}</span>
-              ${diffHtml}
+          <div>
+            <div class="card-img">
+              ${diffBadge}${thumbHtml}
             </div>
+            <div class="card-cat">${item.category}</div>
+            <div class="card-title">${item.name}</div>
           </div>
-          ${isLatestDate ? `
-          <div class="qty-box">
-            ${qty > 0 ? `<button class="qty-btn minus" onclick="changeQtyByIndex(${index}, -1)">−</button>` : ''}
-            ${qty > 0 ? `<span class="qty-val">${qty}</span>` : ''}
-            <button class="qty-btn" onclick="changeQtyByIndex(${index}, 1)">+</button>
+          <div>
+            <div class="card-price">${item.price.toFixed(2)} <span>смн / ${item.unit}</span></div>${actionHtml}
           </div>
-          ` : `<span style="font-size:11px; color:var(--hint);">Архив</span>`}
         `;
-        list.appendChild(card);
+        grid.appendChild(card);
       });
     }
 
-    function changeQtyByIndex(index, delta) {
-      const item = currentFiltered[index];
+    function changeQty(index, delta) {
+      const item = filteredData[index];
       if (!item) return;
 
-      const key = `${item.name.toLowerCase()}_${item.unit}`;
+      const key = `${item.name.toLowerCase()}__${item.unit}`;
       if (!cart[key]) {
         cart[key] = { name: item.name, unit: item.unit, price: item.price, qty: 0 };
       }
       cart[key].qty += delta;
-      if (cart[key].qty <= 0) {
-        delete cart[key];
-      }
+      if (cart[key].qty <= 0) delete cart[key];
+
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
       updateCartBar();
       renderProducts();
     }
 
     function updateCartBar() {
       const items = Object.values(cart);
-      const bar = document.getElementById("cartBar");
+      const bar = document.getElementById("cartFloat");
       if (items.length === 0) {
         bar.style.display = "none";
         return;
       }
-      const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-      document.getElementById("cartCount").innerText = `Корзина (${items.length} поз.)`;
-      document.getElementById("cartTotal").innerText = `${total.toFixed(2)} смн →`;
+      const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+      document.getElementById("cartCount").innerText = `Корзина • ${items.length} поз.`; document.getElementById("cartTotal").innerText = `${total.toFixed(2)} смн →`;
       bar.style.display = "flex";
     }
 
     function openModal() {
-      const container = document.getElementById("orderItems");
-      container.innerHTML = "";
+      const box = document.getElementById("orderSummary");
+      box.innerHTML = "";
       let total = 0;
+
       Object.values(cart).forEach(i => {
         const sum = i.price * i.qty;
         total += sum;
-        container.innerHTML += `
-          <div class="order-item">
-            <span>${i.name} (${i.qty} ${i.unit} × ${i.price})</span>
+        box.innerHTML += `
+          <div class="order-row">
+            <span><b style="text-transform:capitalize;">${i.name}</b> (${i.qty} ${i.unit} ×${i.price.toFixed(2)})</span>
             <b>${sum.toFixed(2)} смн</b>
           </div>
         `;
       });
-      container.innerHTML += `
-        <div class="order-item" style="border:none; font-size:16px; margin-top:6px;">
-          <b>ИТОГО:</b>
-          <b>${total.toFixed(2)} смн</b>
+
+      box.innerHTML += `
+        <div class="order-total">
+          <span>ИТОГО:</span>
+          <span style="color:var(--red);">${total.toFixed(2)} смн</span>
         </div>
       `;
+
       document.getElementById("orderModal").style.display = "flex";
     }
 
@@ -548,53 +775,56 @@
       document.getElementById("orderModal").style.display = "none";
     }
 
-    function sendOrder() {
-      const client = document.getElementById("clientName").value.trim() || "Не указано";
-      const address = document.getElementById("clientAddress").value.trim() || "Не указано";
+    function buildOrderData() {
+      const shopName = document.getElementById("shopName").value.trim();
+      const shopPhone = document.getElementById("shopPhone").value.trim();
+      const shopAddress = document.getElementById("shopAddress").value.trim();
 
-      let text = `🛒 НОВЫЙ ЗАКАЗ (Прайс от ${selectedDate}):\n\n`;
+      if (!shopName || !shopPhone || !shopAddress) {
+        alert("Пожалуйста, заполните название магазина, номер телефона и адрес доставки!");
+        return null;
+      }
+
+      const items = Object.values(cart);
       let total = 0;
-      Object.values(cart).forEach((i, idx) => {
+      let linesText = "";
+      let rowsHtml = "";
+
+      items.forEach((i, idx) => {
         const sum = i.price * i.qty;
         total += sum;
-        text += `${idx + 1}. ${i.name} — ${i.qty} ${i.unit} × ${i.price} = ${sum.toFixed(2)} смн\n`;
+        linesText += `${idx + 1}.${i.name} — ${i.qty}${i.unit} × ${i.price.toFixed(2)} =${sum.toFixed(2)} смн\n`;
+        rowsHtml += `
+          <tr>
+            <td>${idx + 1}</td>
+            <td style="text-transform:capitalize;">${i.name}</td>
+            <td>${i.qty}${i.unit}</td>
+            <td>${i.price.toFixed(2)} смн</td>
+            <td><b>${sum.toFixed(2)} смн</b></td>
+          </tr>
+        `;
       });
-      text += `\n💰 Итого: ${total.toFixed(2)} смн\n`;
-      text += `🏪 Клиент: ${client}\n`;
-      text += `📍 Адрес: ${address}`;
 
-      const tempInput = document.createElement("textarea");
-      tempInput.value = text;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      document.execCommand("copy");
-      document.body.removeChild(tempInput);
+      const nowStr = new Date().toLocaleString("ru-RU");
 
-      fetch(API_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({
-          priceDate: selectedDate,
-          client: client,
-          address: address,
-          total: total.toFixed(2),
-          orderText: text
-        })
-      }).catch(() => {});
+      const tgMessage =
+`🛒 НОВЫЙ ЗАКАЗ (Прайс от ${selectedDate})
+🕒 Время: ${nowStr}
 
-      alert("Заказ записан в таблицу и скопирован в буфер обмена! Сейчас откроется чат с @" + SUPPLIER_USERNAME + " — если текст не вставился сам, нажмите «Вставить».");
+🏪 Магазин: ${shopName}
+📞 Телефон: ${shopPhone}
+📍 Адрес: ${shopAddress}
 
-      if (SUPPLIER_USERNAME && tg) {
-        tg.openTelegramLink(`https://t.me/${SUPPLIER_USERNAME}`);
-      } else if (SUPPLIER_USERNAME) {
-        window.open(`https://t.me/${SUPPLIER_USERNAME}`, "_blank");
-      }
-      closeModal();
-    }
+📦 Список товаров:
+${linesText}
+💰 ИТОГО: ${total.toFixed(2)} смн`;
 
-    document.getElementById("searchInput").addEventListener("input", renderProducts);
-    loadPrices();
-  </script>
-</body>
-</html>
+      const invoiceHtml = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Накладная заказа - ${shopName}</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 24px; color: #111; max-width: 720px; margin: auto; }
+  h1 { font-size: 20px; border-bottom: 2px solid #e52322; padding-bottom: 8px; }
+  .meta {
