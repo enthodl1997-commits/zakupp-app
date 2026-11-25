@@ -7,320 +7,221 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: var(--tg-theme-bg-color, #f5f6f8);
+      --bg: var(--tg-theme-bg-color, #f4f5f7);
       --card: var(--tg-theme-secondary-bg-color, #ffffff);
-      --text: var(--tg-theme-text-color, #1a1a1a);
-      --hint: var(--tg-theme-hint-color, #8c9199);
-      --accent: #e52322;
-      --green: #1fa849;
-      --green-light: rgba(31, 168, 73, 0.12);
-      --border: rgba(0, 0, 0, 0.06);
-      --shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+      --text: var(--tg-theme-text-color, #1c1c1e);
+      --hint: var(--tg-theme-hint-color, #8e8e93);
+      --btn: var(--tg-theme-button-color, #2481cc);
+      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+      --border: rgba(128, 128, 128, 0.15);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
       background: var(--bg);
       color: var(--text);
-      padding-bottom: 96px;
+      padding: 12px 12px 90px;
     }
 
-    .sticky-top {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: var(--card);
-      padding: 12px 14px 10px;
-      border-bottom: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    .header {
+      margin-bottom: 12px;
     }
-
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .header-title {
+    .header h1 {
       font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-    }
-
-    .badge-fresh {
-      background: var(--green-light);
-      color: var(--green);
-      font-size: 11px;
       font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 20px;
+      margin-bottom: 4px;
+    }
+    .header p {
+      font-size: 13px;
+      color: var(--hint);
     }
 
-    .search-wrap {
-      position: relative;
-      margin-bottom: 10px;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 15px;
-      opacity: 0.5;
-    }
-
-    .search-box {
-      width: 100%;
-      padding: 10px 14px 10px 36px;
-      border-radius: 12px;
-      border: none;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 15px;
-      outline: none;
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--hint);
+      margin: 10px 0 6px;
+      text-transform: uppercase;
     }
 
     .scroll-row {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       overflow-x: auto;
+      padding-bottom: 6px;
       scrollbar-width: none;
-      padding-bottom: 2px;
     }
-    .scroll-row::-webkit-scrollbar { display: none; }
+    .scroll-row::-webkit-scrollbar {
+      display: none;
+    }
 
-    .date-chip {
-      padding: 5px 11px;
-      border-radius: 8px;
-      background: var(--bg);
-      color: var(--hint);
-      font-size: 12px;
-      font-weight: 600;
+    .chip {
+      padding: 7px 14px;
+      border-radius: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 500;
       white-space: nowrap;
       cursor: pointer;
       transition: 0.15s;
     }
-    .date-chip.active {
-      background: var(--text);
-      color: var(--card);
+    .chip.active {
+      background: var(--btn);
+      color: var(--btn-text);
+      border-color: var(--btn);
     }
 
-    .cat-section {
-      padding: 12px 14px 4px;
-    }
-
-    .cat-chip {
-      padding: 8px 14px;
+    .search-box {
+      width: 100%;
+      padding: 10px 14px;
       border-radius: 12px;
+      border: 1px solid var(--border);
       background: var(--card);
       color: var(--text);
-      font-size: 13px;
-      font-weight: 600;
-      white-space: nowrap;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-      border: 1px solid transparent;
-      transition: 0.15s;
-    }
-    .cat-chip.active {
-      background: var(--accent);
-      color: #ffffff;
+      font-size: 15px;
+      margin: 8px 0 12px;
+      outline: none;
     }
 
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      padding: 10px 14px;
-    }
-
-    .p-card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 10px;
+    .product-list {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
+      gap: 8px;
     }
 
-    .p-thumb {
-      width: 100%;
-      height: 84px;
-      border-radius: 12px;
-      background: var(--bg);
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--border);
+    }
+
+    .p-info {
+      flex: 1;
+      padding-right: 10px;
+    }
+    .p-cat {
+      font-size: 11px;
+      color: var(--hint);
+      margin-bottom: 2px;
+    }
+    .p-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-transform: capitalize;
+    }
+    .p-price-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 40px;
-      margin-bottom: 8px;
-      position: relative;
+      gap: 8px;
+      flex-wrap: wrap;
     }
-
-    .diff-badge {
-      position: absolute;
-      top: 6px;
-      left: 6px;
-      font-size: 10px;
+    .p-price {
+      font-size: 15px;
       font-weight: 700;
+      color: var(--btn);
+    }
+    .diff-up {
+      font-size: 11px;
+      color: #e53935;
+      background: rgba(229, 57, 53, 0.1);
       padding: 2px 6px;
       border-radius: 6px;
     }
-    .diff-up { background: #ffebee; color: #d32f2f; }
-    .diff-down { background: #e8f5e9; color: #2e7d32; }
-
-    .p-cat-tag {
-      font-size: 10px;
-      color: var(--hint);
-      margin-bottom: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .diff-down {
+      font-size: 11px;
+      color: #2e7d32;
+      background: rgba(46, 125, 50, 0.1);
+      padding: 2px 6px;
+      border-radius: 6px;
     }
-
-    .p-name {
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.25;
-      margin-bottom: 6px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      min-height: 35px;
-      text-transform: capitalize;
-    }
-
-    .p-footer {
-      margin-top: auto;
-    }
-
-    .p-price {
-      font-size: 17px;
-      font-weight: 800;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-    .p-price span {
-      font-size: 12px;
-      font-weight: 600;
+    .diff-same {
+      font-size: 11px;
       color: var(--hint);
     }
 
-    .add-btn {
-      width: 100%;
-      height: 36px;
-      border-radius: 10px;
-      border: none;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
+    .qty-box {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 4px;
-      transition: 0.15s;
+      gap: 8px;
     }
-    .add-btn:active { transform: scale(0.97); }
-
-    .qty-control {
-      width: 100%;
-      height: 36px;
-      border-radius: 10px;
-      background: var(--accent);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 4px;
-    }
-
     .qty-btn {
-      width: 30px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
       border: none;
-      background: transparent;
-      color: #fff;
+      background: var(--btn);
+      color: var(--btn-text);
       font-size: 18px;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-
-    .qty-val {
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .archive-label {
-      width: 100%;
-      height: 36px;
-      border-radius: 10px;
+    .qty-btn.minus {
       background: var(--bg);
-      color: var(--hint);
-      font-size: 12px;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .qty-val {
+      font-size: 15px;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      min-width: 24px;
+      text-align: center;
     }
 
     .cart-bar {
       position: fixed;
-      bottom: 14px;
-      left: 14px;
-      right: 14px;
-      background: var(--accent);
-      color: #ffffff;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      background: var(--btn);
+      color: var(--btn-text);
       padding: 14px 18px;
-      border-radius: 16px;
+      border-radius: 14px;
       display: none;
       justify-content: space-between;
       align-items: center;
-      font-weight: 700;
+      font-weight: 600;
       font-size: 15px;
-      box-shadow: 0 6px 20px rgba(229, 35, 34, 0.35);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
       cursor: pointer;
       z-index: 100;
     }
 
     .loader {
       text-align: center;
-      padding: 50px 20px;
+      padding: 40px 0;
       color: var(--hint);
       font-size: 14px;
-      grid-column: span 2;
     }
 
     .modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(0, 0, 0, 0.5);
       z-index: 200;
       align-items: flex-end;
     }
     .modal-content {
       background: var(--card);
       width: 100%;
-      border-radius: 24px 24px 0 0;
-      padding: 20px 16px 24px;
-      max-height: 88vh;
+      border-radius: 20px 20px 0 0;
+      padding: 20px 16px;
+      max-height: 85vh;
       overflow-y: auto;
     }
     .modal-header {
@@ -329,24 +230,28 @@
       align-items: center;
       margin-bottom: 14px;
     }
-    .modal-title { font-size: 19px; font-weight: 800; }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
     .close-btn {
-      width: 30px; height: 30px; border-radius: 50%;
-      background: var(--bg); border: none; font-size: 16px;
-      color: var(--hint); cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: var(--hint);
+      cursor: pointer;
     }
     .order-item {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
+      padding: 8px 0;
       border-bottom: 1px solid var(--border);
       font-size: 14px;
     }
     .input-field {
       width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text);
@@ -356,56 +261,50 @@
     }
     .submit-btn {
       width: 100%;
-      padding: 15px;
-      border-radius: 14px;
+      padding: 14px;
+      border-radius: 12px;
       border: none;
-      background: var(--accent);
-      color: #ffffff;
+      background: var(--btn);
+      color: var(--btn-text);
       font-size: 16px;
-      font-weight: 700;
-      margin-top: 16px;
+      font-weight: 600;
+      margin-top: 14px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <div class="sticky-top">
-    <div class="header-top">
-      <div class="header-title">🛒 Закупка продуктов</div>
-      <span class="badge-fresh" id="activeDateBadge">Загрузка...</span>
-    </div>
-
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" class="search-box" id="searchInput" placeholder="Найти товар в каталоге...">
-    </div>
-
-    <div class="scroll-row" id="dateRow"></div>
+  <div class="header">
+    <h1>Прайс-лист продуктов</h1>
+    <p>Актуальные цены и история по датам (сомони)</p>
   </div>
 
-  <div class="cat-section">
-    <div class="scroll-row" id="catRow"></div>
-  </div>
+  <div class="section-label">Дата прайса (история цен):</div>
+  <div class="scroll-row" id="dateRow"></div>
 
-  <div class="product-grid" id="productList">
-    <div id="loader" class="loader">Загрузка каталога...</div>
-  </div>
+  <div class="section-label">Категории:</div>
+  <div class="scroll-row" id="catRow"></div>
+
+  <input type="text" class="search-box" id="searchInput" placeholder="Поиск товара (например: Картофель)...">
+
+  <div id="loader" class="loader">Загрузка актуальных цен...</div>
+  <div class="product-list" id="productList"></div>
 
   <div class="cart-bar" id="cartBar" onclick="openModal()">
-    <span id="cartCount">Корзина • 0</span>
+    <span id="cartCount">Корзина (0)</span>
     <span id="cartTotal">0.00 смн →</span>
   </div>
 
   <div class="modal" id="orderModal">
     <div class="modal-content">
       <div class="modal-header">
-        <span class="modal-title">Оформление заказа</span>
+        <span class="modal-title">Ваш заказ</span>
         <button class="close-btn" onclick="closeModal()">✕</button>
       </div>
       <div id="orderItems"></div>
-      <input type="text" id="clientName" class="input-field" placeholder="Магазин / ресторан и телефон">
-      <input type="text" id="clientAddress" class="input-field" placeholder="Адрес и время доставки">
+      <input type="text" id="clientName" class="input-field" placeholder="Название магазина / ресторана и телефон">
+      <input type="text" id="clientAddress" class="input-field" placeholder="Адрес доставки и время">
       <button class="submit-btn" onclick="sendOrder()">Отправить заказ поставщику</button>
     </div>
   </div>
@@ -433,7 +332,7 @@
 
     function normalizeRow(row) {
       const dateRaw = row.date ?? row["ДАТА"] ?? row["Дата"] ?? "";
-      const categoryRaw = row.category ?? row["КАТЕГОРИЯ"] ?? row["Категория"] ?? "Продукты";
+      const categoryRaw = row.category ?? row["КАТЕГОРИЯ"] ?? row["Категория"] ?? "";
       const nameRaw = row.name ?? row["ТОВАР"] ?? row["Товар"] ?? "";
       const unitRaw = row.unit ?? row["ЕДИНИЦА"] ?? row["Единица"] ?? "kg";
       const priceRaw = row.price ?? row["ЦЕНА"] ?? row["Цена"] ?? 0;
@@ -458,43 +357,8 @@
       };
     }
 
-    function getProductEmoji(name, category) {
-      const str = (name + " " + category).toLowerCase();
-      if (str.includes("картоф")) return "🥔";
-      if (str.includes("лук")) return "🧅";
-      if (str.includes("морков")) return "🥕";
-      if (str.includes("помид") || str.includes("томат")) return "🍅";
-      if (str.includes("огур")) return "🥒";
-      if (str.includes("капуст")) return "🥬";
-      if (str.includes("перец")) return "🫑";
-      if (str.includes("чеснок")) return "🧄";
-      if (str.includes("яблок")) return "🍎";
-      if (str.includes("банан")) return "🍌";
-      if (str.includes("лимон") || str.includes("апельсин") || str.includes("мандарин")) return "🍊";
-      if (str.includes("виноград")) return "🍇";
-      if (str.includes("арбуз")) return "🍉";
-      if (str.includes("дыня")) return "🍈";
-      if (str.includes("зелень") || str.includes("укроп") || str.includes("кинз")) return "🌿";
-      if (str.includes("мясо") || str.includes("говяд") || str.includes("баран")) return "🥩";
-      if (str.includes("куриц") || str.includes("филе") || str.includes("окороч")) return "🍗";
-      if (str.includes("рыб")) return "🐟";
-      if (str.includes("яйц")) return "🥚";
-      if (str.includes("молок") || str.includes("кефир")) return "🥛";
-      if (str.includes("сыр")) return "🧀";
-      if (str.includes("масло")) return "🧈";
-      if (str.includes("рис") || str.includes("греч") || str.includes("круп")) return "🌾";
-      if (str.includes("мука") || str.includes("хлеб") || str.includes("лепеш")) return "🥖";
-      if (str.includes("сахар") || str.includes("соль")) return "🧂";
-      if (str.includes("макарон") || str.includes("спагет")) return "🍝";
-      if (str.includes("вода") || str.includes("сок") || str.includes("напит")) return "🧃";
-      if (str.includes("овощ")) return "🥗";
-      if (str.includes("фрукт")) return "🍏";
-      return "📦";
-    }
-
     function parseDateStr(dStr) {
-      if (!dStr) return new Date(0);
-      const parts = String(dStr).split(".");
+      const parts = String(dStr || "").split(".");
       if (parts.length !== 3) return new Date(0);
       return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
     }
@@ -504,9 +368,7 @@
         const res = await fetch(API_URL);
         const raw = await res.json();
         const list = Array.isArray(raw) ? raw : (Array.isArray(raw?.data) ? raw.data : []);
-        allData = list
-          .map(normalizeRow)
-          .filter(item => item.date && item.name);
+        allData = list.map(normalizeRow).filter(item => item.date && item.name);
 
         const uniqueDates = [...new Set(allData.map(item => item.date))];
         uniqueDates.sort((a, b) => parseDateStr(b) - parseDateStr(a));
@@ -516,24 +378,22 @@
           selectedDate = dates[0];
         }
 
+        document.getElementById("loader").style.display = "none";
         renderDates();
         renderCategories();
         renderProducts();
       } catch (err) {
-        document.getElementById("productList").innerHTML =
-          `<div class="loader">Ошибка загрузки прайса. Проверьте соединение и доступ к API.</div>`;
+        document.getElementById("loader").innerText = "Ошибка загрузки прайса. Проверьте интернет.";
       }
     }
 
     function renderDates() {
       const row = document.getElementById("dateRow");
-      const badge = document.getElementById("activeDateBadge");
       row.innerHTML = "";
-
       dates.forEach((d, idx) => {
         const chip = document.createElement("div");
-        chip.className = "date-chip" + (d === selectedDate ? " active" : "");
-        chip.innerText = idx === 0 ? `Свежий • ${d}` : d;
+        chip.className = "chip" + (d === selectedDate ? " active" : "");
+        chip.innerText = idx === 0 ? `${d} (Свежий)` : d;
         chip.onclick = () => {
           selectedDate = d;
           cart = {};
@@ -544,8 +404,6 @@
         };
         row.appendChild(chip);
       });
-
-      badge.innerText = selectedDate ? `Прайс от ${selectedDate}` : "Нет данных";
     }
 
     function renderCategories() {
@@ -558,7 +416,7 @@
 
       cats.forEach(c => {
         const chip = document.createElement("div");
-        chip.className = "cat-chip" + (c === selectedCat ? " active" : "");
+        chip.className = "chip" + (c === selectedCat ? " active" : "");
         chip.innerText = c;
         chip.onclick = () => {
           selectedCat = c;
@@ -592,60 +450,43 @@
       });
 
       if (currentFiltered.length === 0) {
-        list.innerHTML = `<div class="loader">По вашему запросу ничего не найдено</div>`;
+        list.innerHTML = `<div class="loader">Товары не найдены</div>`;
         return;
       }
 
       const isLatestDate = selectedDate === dates[0];
 
       currentFiltered.forEach((item, index) => {
-        const key = `${item.name.toLowerCase()}__${item.unit}`;
+        const key = `${item.name.toLowerCase()}_${item.unit}`;
         const qty = cart[key] ? cart[key].qty : 0;
         const prevPrice = getPrevPrice(item.name, selectedDate);
-        const emoji = getProductEmoji(item.name, item.category);
 
         let diffHtml = "";
-        if (prevPrice !== null && prevPrice !== item.price) {
+        if (prevPrice !== null) {
           const diff = +(item.price - prevPrice).toFixed(2);
-          if (diff > 0) diffHtml = `<span class="diff-badge diff-up">▲ +${diff} смн</span>`;
-          else if (diff < 0) diffHtml = `<span class="diff-badge diff-down">▼ ${diff} смн</span>`;
+          if (diff > 0) diffHtml = `<span class="diff-up">▲ +${diff} смн</span>`;
+          else if (diff < 0) diffHtml = `<span class="diff-down">▼ ${diff} смн</span>`;
+          else diffHtml = `<span class="diff-same">без изм.</span>`;
         }
 
         const card = document.createElement("div");
-        card.className = "p-card";
-
-        let actionHtml = `<div class="archive-label">Архивная цена</div>`;
-        if (isLatestDate) {
-          if (qty > 0) {
-            actionHtml = `
-              <div class="qty-control">
-                <button class="qty-btn" onclick="changeQtyByIndex(${index}, -1)">−</button>
-                <span class="qty-val">${qty} ${item.unit}</span>
-                <button class="qty-btn" onclick="changeQtyByIndex(${index}, 1)">+</button>
-              </div>
-            `;
-          } else {
-            actionHtml = `
-              <button class="add-btn" onclick="changeQtyByIndex(${index}, 1)">
-                <span>+</span> В корзину
-              </button>
-            `;
-          }
-        }
-
+        card.className = "card";
         card.innerHTML = `
-          <div>
-            <div class="p-thumb">
-              ${diffHtml}
-              <span>${emoji}</span>
-            </div>
-            <div class="p-cat-tag">${item.category}</div>
+          <div class="p-info">
+            <div class="p-cat">${item.category}</div>
             <div class="p-name">${item.name}</div>
+            <div class="p-price-row">
+              <span class="p-price">${item.price.toFixed(2)} смн / ${item.unit}</span>
+              ${diffHtml}
+            </div>
           </div>
-          <div class="p-footer">
-            <div class="p-price">${item.price.toFixed(2)} <span>смн / ${item.unit}</span></div>
-            ${actionHtml}
+          ${isLatestDate ? `
+          <div class="qty-box">
+            ${qty > 0 ? `<button class="qty-btn minus" onclick="changeQtyByIndex(${index}, -1)">−</button>` : ''}
+            ${qty > 0 ? `<span class="qty-val">${qty}</span>` : ''}
+            <button class="qty-btn" onclick="changeQtyByIndex(${index}, 1)">+</button>
           </div>
+          ` : `<span style="font-size:11px; color:var(--hint);">Архив</span>`}
         `;
         list.appendChild(card);
       });
@@ -655,21 +496,14 @@
       const item = currentFiltered[index];
       if (!item) return;
 
-      const key = `${item.name.toLowerCase()}__${item.unit}`;
-
+      const key = `${item.name.toLowerCase()}_${item.unit}`;
       if (!cart[key]) {
         cart[key] = { name: item.name, unit: item.unit, price: item.price, qty: 0 };
       }
       cart[key].qty += delta;
-
       if (cart[key].qty <= 0) {
         delete cart[key];
       }
-
-      if (tg?.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred("light");
-      }
-
       updateCartBar();
       renderProducts();
     }
@@ -682,7 +516,7 @@
         return;
       }
       const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-      document.getElementById("cartCount").innerText = `Корзина • ${items.length} поз.`;
+      document.getElementById("cartCount").innerText = `Корзина (${items.length} поз.)`;
       document.getElementById("cartTotal").innerText = `${total.toFixed(2)} смн →`;
       bar.style.display = "flex";
     }
@@ -691,25 +525,20 @@
       const container = document.getElementById("orderItems");
       container.innerHTML = "";
       let total = 0;
-
       Object.values(cart).forEach(i => {
         const sum = i.price * i.qty;
         total += sum;
         container.innerHTML += `
           <div class="order-item">
-            <div>
-              <div style="font-weight:600; text-transform:capitalize;">${i.name}</div>
-              <div style="font-size:12px; color:var(--hint);">${i.qty} ${i.unit} × ${i.price.toFixed(2)} смн</div>
-            </div>
+            <span>${i.name} (${i.qty} ${i.unit} × ${i.price})</span>
             <b>${sum.toFixed(2)} смн</b>
           </div>
         `;
       });
-
       container.innerHTML += `
-        <div class="order-item" style="border:none; font-size:17px; margin-top:8px;">
-          <b>Итого к оплате:</b>
-          <b style="color:var(--accent);">${total.toFixed(2)} смн</b>
+        <div class="order-item" style="border:none; font-size:16px; margin-top:6px;">
+          <b>ИТОГО:</b>
+          <b>${total.toFixed(2)} смн</b>
         </div>
       `;
       document.getElementById("orderModal").style.display = "flex";
@@ -754,7 +583,7 @@
         })
       }).catch(() => {});
 
-      alert("Заказ сохранён и скопирован в буфер обмена! Сейчас откроется чат с @" + SUPPLIER_USERNAME + " — вставьте сообщение, если оно не подставилось автоматически.");
+      alert("Заказ записан в таблицу и скопирован в буфер обмена! Сейчас откроется чат с @" + SUPPLIER_USERNAME + " — если текст не вставился сам, нажмите «Вставить».");
 
       if (SUPPLIER_USERNAME && tg) {
         tg.openTelegramLink(`https://t.me/${SUPPLIER_USERNAME}`);
