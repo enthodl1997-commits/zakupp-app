@@ -1,156 +1,234 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Курьер | Доставка заказов</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Курьер | Доставка</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: var(--tg-theme-bg-color, #f4f5f7);
-      --card: var(--tg-theme-secondary-bg-color, #ffffff);
-      --text: var(--tg-theme-text-color, #1c1c1e);
-      --hint: var(--tg-theme-hint-color, #8e8e93);
-      --btn: var(--tg-theme-button-color, #2481cc);
-      --btn-text: var(--tg-theme-button-text-color, #ffffff);
-      --border: rgba(128,128,128,0.16);
-      --green: #2e7d32;
-      --orange: #ef6c00;
-      --red: #c62828;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-2: #273549;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #22c55e;
+      --accent-2: #3b82f6;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --border: #334155;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 14px 12px 30px; }
-
-    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-    .top-bar h1 { font-size: 20px; font-weight: 700; }
-    .top-bar p { font-size: 13px; color: var(--hint); margin-top: 2px; }
-    .refresh-btn {
-      background: var(--card); border: 1px solid var(--border); color: var(--text);
-      padding: 8px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 17px;
+    }
+    .meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+    .actions-top {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      background: var(--accent-2);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    button.btn-green { background: var(--accent); color: #052e16; }
+    button.btn-warn { background: var(--warn); color: #1c1917; }
+    button.btn-gray { background: var(--card-2); color: var(--text); border: 1px solid var(--border); }
 
-    .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
     .tab {
-      flex: 1; text-align: center; padding: 10px; border-radius: 12px;
-      background: var(--card); border: 1px solid var(--border);
-      font-size: 14px; font-weight: 600; cursor: pointer;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
     }
-    .tab.active { background: var(--btn); color: var(--btn-text); border-color: var(--btn); }
-
-    .card {
-      background: var(--card); border-radius: 16px; padding: 14px;
-      margin-bottom: 12px; border: 1px solid var(--border);
-    }
-    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
-    .st-new { background: rgba(36,129,204,0.12); color: var(--btn); }
-    .st-way { background: rgba(239,108,0,0.14); color: var(--orange); }
-    .st-done { background: rgba(46,125,50,0.14); color: var(--green); }
-    .st-cancel { background: rgba(198,40,40,0.14); color: var(--red); }
-
-    .order-time { font-size: 12px; color: var(--hint); }
-    .client-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-    .address { font-size: 14px; margin-bottom: 10px; line-height: 1.35; }
-
-    .items-box {
-      background: var(--bg); border-radius: 10px; padding: 10px;
-      font-size: 13px; line-height: 1.45; white-space: pre-wrap; margin-bottom: 10px;
+    .tab.active {
+      background: var(--accent-2);
+      color: #fff;
+      border-color: var(--accent-2);
     }
 
-    .money-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-top: 8px; border-top: 1px solid var(--border); margin-bottom: 12px;
+    .status-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
-    .total-sum { font-size: 17px; font-weight: 800; }
-    .cash-tag { font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 6px; }
-    .cash-wait { background: rgba(239,108,0,0.12); color: var(--orange); }
-    .cash-ok { background: rgba(46,125,50,0.15); color: var(--green); }
-
-    .actions { display: flex; flex-direction: column; gap: 8px; }
-    .btn {
-      width: 100%; padding: 12px; border-radius: 11px; border: none;
-      font-size: 14px; font-weight: 600; cursor: pointer;
+    .error-box {
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid var(--danger);
+      color: #fecaca;
     }
-    .btn-way { background: var(--orange); color: #fff; }
-    .btn-done { background: var(--green); color: #fff; }
-    .btn-cancel { background: transparent; border: 1px solid var(--red); color: var(--red); }
 
-    .center-box { text-align: center; padding: 50px 16px; color: var(--hint); font-size: 15px; }
-    .comment-note { font-size: 12px; color: var(--red); margin-top: 6px; }
+    .order-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .client {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .total {
+      font-size: 16px;
+      font-weight: 700;
+      color: #4ade80;
+      white-space: nowrap;
+    }
+    .line {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .line strong { color: var(--text); }
+    .badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 8px 0 10px;
+    }
+    .badge {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+    }
+    .order-text {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      margin-bottom: 10px;
+    }
+    .comment-input {
+      width: 100%;
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body>
-
-  <div class="top-bar">
+  <div class="header">
     <div>
-      <h1 id="courierTitle">Заказы курьера</h1>
-      <p id="courierSub">Загрузка профиля...</p>
+      <h1>Заказы курьера</h1>
+      <div class="meta" id="courierMeta">ID: ...</div>
     </div>
-    <button class="refresh-btn" onclick="loadOrders()">↻ Обновить</button>
+    <div class="actions-top">
+      <button class="btn-gray" id="refreshBtn" onclick="loadOrders()">↻ Обновить</button>
+      <button class="btn-gray" id="changeIdBtn" onclick="changeTestId()" style="display:none;">Сменить ID</button>
+    </div>
   </div>
 
-  <div class="tabs" id="tabsBar" style="display:none;">
-    <div class="tab active" id="tabActive" onclick="switchTab('active')">Активные (0)</div>
-    <div class="tab" id="tabDone" onclick="switchTab('done')">Завершённые (0)</div>
+  <div class="tabs">
+    <div class="tab active" id="tabActive" onclick="switchTab('active')">Активные</div>
+    <div class="tab" id="tabDone" onclick="switchTab('done')">Доставленные</div>
   </div>
 
-  <div id="content">
-    <div class="center-box">Проверка доступа и загрузка заказов...</div>
-  </div>
+  <div id="statusBox" class="status-box">Загрузка...</div>
+  <div id="ordersList"></div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxMPEopPhziMRSrS03x7a3tqGzvNa9zfkMGJaTAy4HWwCcAxpKBmwC-r4QE1qgC7WZuqA/exec";
+    // ВСТАВЬ СЮДА СВОЙ АКТУАЛЬНЫЙ URL ВЕБ-ПРИЛОЖЕНИЯ APPS SCRIPT (.../exec)
+    const API_URL = "https://script.google.com/macros/s/ВСТАВЬ_СЮДА_СВОЙ_ID/exec";
 
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    let currentTab = "active";
-    let orders = [];
-    let tgId = "";
-
-    function resolveUserId() {
-      if (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
-        return String(tg.initDataUnsafe.user.id);
-      }
-      const saved = localStorage.getItem("test_courier_id");
-      if (saved) return saved;
-      const entered = prompt("Тестовый режим: введите ваш Telegram ID курьера:");
-      if (entered) localStorage.setItem("test_courier_id", entered.trim());
-      return (entered || "").trim();
+    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    if (tg) {
+      tg.ready();
+      tg.expand();
     }
 
-    async function loadOrders() {
-      tgId = resolveUserId();
-      const content = document.getElementById("content");
+    let currentTab = "active";
+    let ordersCache = [];
+    let courierId = "";
 
-      if (!tgId) {
-        content.innerHTML = `<div class="center-box">Не удалось определить Telegram ID. Откройте приложение через Telegram.</div>`;
-        return;
+    function getCourierId() {
+      const tgUserId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id;
+      if (tgUserId) {
+        return String(tgUserId).trim();
       }
-
-      content.innerHTML = `<div class="center-box">Загрузка заказов...</div>`;
-
-      try {
-        const url = `${API_URL}?action=courier_orders&tg_id=${encodeURIComponent(tgId)}`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        if (!data.ok) {
-          document.getElementById("courierSub").innerText = "ID: " + tgId;
-          document.getElementById("tabsBar").style.display = "none";
-          content.innerHTML = `<div class="center-box">⛔ ${data.error}</div>`;
-          return;
-        }
-
-        document.getElementById("courierTitle").innerText = `Курьер: ${data.courierName}`;
-        document.getElementById("courierSub").innerText = `ID: ${tgId} • Оплата: только наличные`;
-        document.getElementById("tabsBar").style.display = "flex";
-
-        orders = data.orders || [];
-        renderOrders();
-      } catch (e) {
-        content.innerHTML = `<div class="center-box">Ошибка соединения. Проверьте интернет и попробуйте снова.</div>`;
+      document.getElementById("changeIdBtn").style.display = "inline-block";
+      let saved = (localStorage.getItem("test_courier_id") || "").trim();
+      if (!saved) {
+        saved = (prompt("Введите числовой Telegram ID курьера:", "842535280") || "").trim();
+        if (saved) localStorage.setItem("test_courier_id", saved);
       }
+      return saved;
+    }
+
+    function changeTestId() {
+      localStorage.removeItem("test_courier_id");
+      courierId = getCourierId();
+      loadOrders();
     }
 
     function switchTab(tab) {
@@ -160,96 +238,157 @@
       renderOrders();
     }
 
-    function renderOrders() {
-      const activeList = orders.filter(o => o.status === "Назначен" || o.status === "В пути");
-      const doneList = orders.filter(o => o.status === "Доставлен" || o.status === "Отменён");
+    function setStatus(text, isError = false) {
+      const box = document.getElementById("statusBox");
+      if (!text) {
+        box.style.display = "none";
+        return;
+      }
+      box.style.display = "block";
+      box.textContent = text;
+      box.classList.toggle("error-box", isError);
+    }
 
-      document.getElementById("tabActive").innerText = `Активные (${activeList.length})`;
-      document.getElementById("tabDone").innerText = `Завершённые (${doneList.length})`;
+    async function apiRequest(paramsObj) {
+      if (!API_URL || API_URL.includes("ВСТАВЬ_СЮДА_СВОЙ_ID")) {
+        throw new Error("Не указан API_URL в courier.html");
+      }
+      const url = new URL(API_URL);
+      Object.entries(paramsObj).forEach(([k, v]) => {
+        if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
+      });
 
-      const list = currentTab === "active" ? activeList : doneList;
-      const content = document.getElementById("content");
+      const res = await fetch(url.toString(), { method: "GET" });
+      if (!res.ok) {
+        throw new Error("HTTP " + res.status + " при обращении к Apps Script");
+      }
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error("Ответ не JSON (проверьте доступ 'Все' в Apps Script): " + text.slice(0, 160));
+      }
+      if (Array.isArray(data)) {
+        throw new Error("Сервер вернул прайс вместо данных курьера. Создайте Новое развёртывание в Apps Script.");
+      }
+      if (!data || data.ok === false) {
+        throw new Error((data && data.error) ? data.error : "Ошибка сервера без описания");
+      }
+      return data;
+    }
 
-      if (list.length === 0) {
-        content.innerHTML = `<div class="center-box">${currentTab === "active" ? "Активных заказов пока нет" : "Завершённых заказов пока нет"}</div>`;
+    async function loadOrders() {
+      courierId = getCourierId();
+      document.getElementById("courierMeta").textContent = "ID: " + (courierId || "не задан");
+      if (!courierId) {
+        setStatus("⛔ Не указан Telegram ID курьера", true);
         return;
       }
 
-      content.innerHTML = "";
-      list.forEach(o => {
-        let badgeClass = "st-new";
-        if (o.status === "В пути") badgeClass = "st-way";
-        else if (o.status === "Доставлен") badgeClass = "st-done";
-        else if (o.status === "Отменён") badgeClass = "st-cancel";
+      const btn = document.getElementById("refreshBtn");
+      btn.disabled = true;
+      setStatus("Загружаем заказы...");
+      document.getElementById("ordersList").innerHTML = "";
 
-        const isCashOk = o.cashStatus === "В наличии";
-
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div class="card-head">
-            <span class="badge ${badgeClass}">${o.status}</span>
-            <span class="order-time">${o.createdAt}</span>
-          </div>
-          <div class="client-name">🏪 ${escapeHtml(o.client)}</div>
-          <div class="address">📍 ${escapeHtml(o.address)}</div>
-          <div class="items-box">${escapeHtml(o.orderText)}</div>
-          <div class="money-row">
-            <span class="total-sum">${o.total.toFixed(2)} смн</span>
-            <span class="cash-tag ${isCashOk ? "cash-ok" : "cash-wait"}">
-              💵 Наличные: ${escapeHtml(o.cashStatus)}
-            </span>
-          </div>
-          ${o.deliveredAt ? `<div class="order-time" style="margin-bottom:6px;">✅ Доставлен: ${o.deliveredAt}</div>` : ""}
-          ${o.comment ? `<div class="comment-note">Примечание: ${escapeHtml(o.comment)}</div>` : ""}
-          ${currentTab === "active" ? `
-            <div class="actions">
-              ${o.status === "Назначен" ? `<button class="btn btn-way" onclick="updateStatus(${o.rowIndex}, 'В пути', '')">🚚 Взял заказ / В пути</button>` : ""}
-              <button class="btn btn-done" onclick="completeOrder(${o.rowIndex}, ${o.total})">✅ Доставлен и наличные в наличии (${o.total.toFixed(2)} смн)</button>
-              <button class="btn btn-cancel" onclick="cancelOrder(${o.rowIndex})">✕ Отмена / Проблема</button>
-            </div>
-          ` : ""}
-        `;
-        content.appendChild(card);
-      });
-    }
-
-    async function updateStatus(rowIndex, status, cashStatus, comment) {
       try {
-        let url = `${API_URL}?action=update_order&tg_id=${encodeURIComponent(tgId)}&rowIndex=${rowIndex}`;
-        if (status) url += `&status=${encodeURIComponent(status)}`;
-        if (cashStatus) url += `&cashStatus=${encodeURIComponent(cashStatus)}`;
-        if (comment !== undefined) url += `&comment=${encodeURIComponent(comment)}`;
-
-        const res = await fetch(url);
-        const data = await res.json();
-        if (!data.ok) {
-          alert("Ошибка: " + data.error);
-          return;
-        }
-        loadOrders();
-      } catch (e) {
-        alert("Не удалось обновить статус. Проверьте интернет.");
+        const data = await apiRequest({ action: "courier_orders", tg_id: courierId });
+        document.getElementById("courierMeta").textContent =
+          "Курьер: " + (data.courierName || "—") + " | ID: " + courierId;
+        ordersCache = Array.isArray(data.orders) ? data.orders : [];
+        setStatus("");
+        renderOrders();
+      } catch (err) {
+        setStatus("⛔ " + (err && err.message ? err.message : String(err)), true);
+      } finally {
+        btn.disabled = false;
       }
     }
 
-    function completeOrder(rowIndex, total) {
-      const ok = confirm(`Подтвердите: товар передан клиенту, а наличные ${total.toFixed(2)} смн получены и в наличии?`);
-      if (!ok) return;
-      updateStatus(rowIndex, "Доставлен", "В наличии");
+    async function updateOrder(rowIndex, payload) {
+      setStatus("Сохраняем изменения в таблице...");
+      try {
+        await apiRequest({
+          action: "update_order",
+          tg_id: courierId,
+          rowIndex: rowIndex,
+          ...payload
+        });
+        await loadOrders();
+      } catch (err) {
+        setStatus("⛔ " + (err && err.message ? err.message : String(err)), true);
+      }
     }
 
-    function cancelOrder(rowIndex) {
-      const reason = prompt("Укажите причину отмены или проблему:");
-      if (reason === null) return;
-      updateStatus(rowIndex, "Отменён", "Ожидает", reason.trim() || "Без комментария");
+    function renderOrders() {
+      const list = document.getElementById("ordersList");
+      const filtered = ordersCache.filter(o => {
+        const isDone = String(o.status || "").trim().toLowerCase() === "доставлен";
+        return currentTab === "done" ? isDone : !isDone;
+      });
+
+      if (!filtered.length) {
+        list.innerHTML = '<div class="status-box">' +
+          (currentTab === "done" ? "Доставленных заказов пока нет." : "Активных заказов пока нет.") +
+          '</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(o => {
+        const commentId = "comment_" + o.rowIndex;
+        const safeComment = String(o.comment || "").replace(/"/g, "&quot;");
+        return `
+          <div class="order-card">
+            <div class="order-top">
+              <div class="client">${escapeHtml(o.client || "Клиент")}</div>
+              <div class="total">${Number(o.total || 0).toFixed(2)} смн</div>
+            </div>
+            <div class="line"><strong>Адрес:</strong> ${escapeHtml(o.address || "—")}</div>
+            <div class="line"><strong>Время:</strong> ${escapeHtml(o.createdAt || "—")}</div>
+            <div class="badges">
+              <span class="badge">Статус: ${escapeHtml(o.status || "Назначен")}</span>
+              <span class="badge">Наличные: ${escapeHtml(o.cashStatus || "Ожидает")}</span>
+              ${o.deliveredAt ? `<span class="badge">Доставлен: ${escapeHtml(o.deliveredAt)}</span>` : ""}
+            </div>
+            ${o.orderText ? `<div class="order-text">${escapeHtml(o.orderText)}</div>` : ""}
+            <input
+              id="${commentId}"
+              class="comment-input"
+              type="text"
+              placeholder="Комментарий к заказу..."
+              value="${safeComment}"
+            />
+            <div class="card-actions">
+              <button
+                class="btn-warn"
+                onclick="updateOrder(${o.rowIndex}, { status: 'В пути', comment: document.getElementById('${commentId}').value })"
+              >
+                Взял заказ / В пути
+              </button>
+              <button
+                class="btn-green"
+                onclick="updateOrder(${o.rowIndex}, { status: 'Доставлен', cashStatus: 'В наличии', comment: document.getElementById('${commentId}').value })"
+              >
+                Доставлен и наличные в наличии
+              </button>
+              <button
+                class="btn-gray"
+                onclick="updateOrder(${o.rowIndex}, { comment: document.getElementById('${commentId}').value })"
+              >
+                Сохранить комментарий
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
     function escapeHtml(str) {
       return String(str)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
     loadOrders();
